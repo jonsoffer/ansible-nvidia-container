@@ -1,0 +1,14 @@
+---
+- name: Install
+  hosts: localhost
+
+  tasks:
+    - name: Retrieve deb repo
+      uri:
+        url: "https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list"
+        return_content: true
+      register: repo_list
+    - name: print
+      debug:
+        msg: "{{ repo_list.content | split }}"
+
