@@ -1,14 +1,18 @@
 ---
 - name: Install
   hosts: localhost
-
+  vars:
+    repo_uri: "https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH)"
   tasks:
-    - name: Retrieve deb repo
-      uri:
-        url: "https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list"
-        return_content: true
-      register: repo_list
-    - name: print
-      debug:
-        msg: "{{ repo_list.content | split }}"
+    - name: Install repo
+      become: true
+      deb822_repository:
+        name: nvidia_toolkit
+        uris: "{{ repo_uri }}"
+        suites: /
+        signed_by: https://nvidia.github.io/libnvidia-container/gpgkey
+    - name: Update
+      become: true
+      apt:
+        update_cache: true
 
