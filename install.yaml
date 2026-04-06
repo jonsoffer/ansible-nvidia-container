@@ -2,7 +2,9 @@
 - name: Install
   hosts: localhost
   vars:
+    nvidia_container_toolkit_version: "1.17.8-1"
     repo_uri: "https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH)"
+    spec_filepath: /etc/cdi/nvidia.yaml
   tasks:
     - name: Install repo
       become: true
@@ -15,4 +17,13 @@
       become: true
       apt:
         update_cache: true
-
+    - name: Install package
+      become: true
+      apt:
+        pkg:
+          - "nvidia-container-toolkit-base={{ nvidia_container_toolkit_version }}"
+    - name: Generate the CDI specification file
+      become: true
+      command:
+        cmd: "nvidia-ctk cdi generate --output={{ spec_filepath }}"
+        creates: "{{ spec_filepath }}"
